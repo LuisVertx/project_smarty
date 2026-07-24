@@ -1,0 +1,9 @@
+/vendor/
+
+storage/cache/*
+storage/templates_c/*
+
+
+.vscode/
+
+.env
