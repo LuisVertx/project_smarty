@@ -1,12 +1,10 @@
 {
-    "name": "blog/test-task",
-    "description": "Simple Blog",
+    "name": "luisvertx/project",
+    "description": "Simple blog on PHP and Smarty",
     "type": "project",
-
     "require": {
-        "smarty/smarty": "^5.0"
+        "smarty/smarty": "^5.5"
     },
-
     "autoload": {
         "psr-4": {
             "App\\": "app/"
