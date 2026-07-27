@@ -1,42 +1,41 @@
-{extends file='layouts/main.tpl'}
+{extends file="layouts/main.tpl"}
 
 {block name=content}
-    <section class="hero">
-        <h1 class="hero__title">Блог</h1>
-        <p class="hero__subtitle">Категории и последние статьи</p>
-    </section>
 
-    {foreach $categories as $category}
-        <section class="category">
-            <div class="category__header">
-                <div>
-                    <h2 class="category__title">{$category.title|escape}</h2>
-                    <p class="category__description">{$category.description|escape}</p>
-                </div>
+<h2>Главная страница</h2>
 
-                <a class="btn" href="/project/public/category.php?id={$category.id}">Все статьи</a>
+{foreach $categories as $category}
+
+<div class="category">
+
+    <h3>{$category.title}</h3>
+
+    <p>{$category.description}</p>
+
+    <div class="posts">
+
+        {foreach $category.posts as $post}
+
+            <div class="post">
+
+                <h4>{$post.title}</h4>
+
+                <p>{$post.description}</p>
+
             </div>
 
-            <div class="posts">
-                {foreach $category.posts as $post}
-                    <article class="post-card">
-                        <div class="post-card__content">
-                            <h3 class="post-card__title">
-                                <a href="/project/public/article.php?id={$post.id}">{$post.title|escape}</a>
-                            </h3>
+        {/foreach}
 
-                            <p class="post-card__description">{$post.description|escape}</p>
-                        </div>
+    </div>
 
-                        <div class="post-card__meta">
-                            <span>{$post.views} просмотров</span>
-                            <span>{$post.created_at}</span>
-                        </div>
-                    </article>
-                {/foreach}
-            </div>
-        </section>
-    {foreachelse}
-        <p>Пока нет категорий со статьями.</p>
-    {/foreach}
+    <a href="/category.php?id={$category.id}">
+        Все статьи →
+    </a>
+
+    <hr>
+
+</div>
+
+{/foreach}
+
 {/block}

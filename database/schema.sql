@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS blog
+CREATE DATABASE IF NOT EXISTS project
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
-USE blog;
+USE project;
 
 CREATE TABLE categories
 (
