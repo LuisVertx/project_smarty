@@ -197,3 +197,72 @@ a {
     color: #fff;
     border-color: #111827;
 }
+
+.article {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.back-link {
+    display: inline-flex;
+    margin-bottom: 16px;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.article__title {
+    margin: 0 0 12px;
+    font-size: 34px;
+}
+
+.article__meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.article__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 14px;
+}
+
+.article__image {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 20px;
+}
+
+.article__content {
+    font-size: 18px;
+    color: #374151;
+}
+
+.section-title {
+    margin: 0 0 16px;
+    font-size: 24px;
+}
+
+.related {
+    margin-top: 16px;
+}
