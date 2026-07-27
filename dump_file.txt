@@ -1,18 +1,101 @@
--- Project Blog dump
--- 3 categories / 9 posts
+-- ==========================================
+-- Project Blog SQL Dump
+-- ==========================================
 
-SET FOREIGN_KEY_CHECKS=0;
+DROP DATABASE IF EXISTS project;
 
-DELETE FROM post_category;
-DELETE FROM posts;
-DELETE FROM categories;
+CREATE DATABASE project
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 
+USE project;
 
-INSERT INTO categories (id, title, description) VALUES
-(1, 'PHP', 'Статьи по PHP и backend-разработке'),
-(2, 'MySQL', 'Работа с базами данных MySQL'),
-(3, 'Docker', 'Контейнеризация приложений');
+-- ==========================================
+-- TABLES
+-- ==========================================
 
+CREATE TABLE categories
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    title VARCHAR(255) NOT NULL,
+
+    description TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    image VARCHAR(255),
+
+    title VARCHAR(255) NOT NULL,
+
+    description TEXT,
+
+    content LONGTEXT NOT NULL,
+
+    views INT DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE post_category
+(
+    post_id INT NOT NULL,
+
+    category_id INT NOT NULL,
+
+    PRIMARY KEY(post_id, category_id),
+
+    FOREIGN KEY(post_id)
+        REFERENCES posts(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY(category_id)
+        REFERENCES categories(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_posts_created
+ON posts(created_at);
+
+CREATE INDEX idx_posts_views
+ON posts(views);
+
+CREATE INDEX idx_post_category_post
+ON post_category(post_id);
+
+CREATE INDEX idx_post_category_category
+ON post_category(category_id);
+
+-- ==========================================
+-- DATA
+-- ==========================================
+
+INSERT INTO categories
+(id, title, description)
+VALUES
+
+(
+1,
+'PHP',
+'Статьи по PHP и backend-разработке'
+),
+
+(
+2,
+'MySQL',
+'Работа с базами данных MySQL'
+),
+
+(
+3,
+'Docker',
+'Контейнеризация приложений'
+);
 
 INSERT INTO posts
 (id, image, title, description, content, views, created_at)
@@ -23,9 +106,9 @@ VALUES
 'php.jpg',
 'Основы PHP 8',
 'Введение в современный PHP',
-'PHP 8 получил множество улучшений производительности и новые возможности языка. В статье рассматриваются основные принципы разработки на PHP.',
+'PHP 8 значительно улучшил производительность языка и добавил множество современных возможностей. В этой статье рассматриваются ключевые изменения новой версии, типизация, атрибуты и рекомендации по написанию чистого кода.',
 120,
-'2026-07-01'
+'2026-07-01 10:00:00'
 ),
 
 (
@@ -33,9 +116,9 @@ VALUES
 'php.jpg',
 'PDO и безопасные запросы',
 'Работа с базой данных через PDO',
-'PDO позволяет безопасно выполнять SQL запросы через подготовленные выражения. Это один из основных инструментов современного PHP.',
+'PDO является стандартным способом взаимодействия PHP с различными СУБД. Использование подготовленных выражений защищает приложение от SQL-инъекций и делает код переносимым.',
 350,
-'2026-07-05'
+'2026-07-05 12:15:00'
 ),
 
 (
@@ -43,20 +126,19 @@ VALUES
 'php.jpg',
 'MVC архитектура',
 'Разделение логики приложения',
-'MVC помогает разделить приложение на модель, представление и контроллер. Такой подход делает проект удобным для поддержки.',
+'Архитектура MVC разделяет приложение на модели, представления и контроллеры. Благодаря этому код становится проще поддерживать, тестировать и масштабировать.',
 980,
-'2026-07-10'
+'2026-07-10 09:30:00'
 ),
-
 
 (
 4,
 'mysql.jpg',
 'Индексы MySQL',
 'Как ускорить запросы',
-'Индексы позволяют базе данных быстрее находить нужные записи и повышают скорость выполнения запросов.',
+'Индексы существенно ускоряют поиск данных в таблицах. Однако неправильное использование индексов может привести к замедлению операций записи.',
 740,
-'2026-07-12'
+'2026-07-12 14:20:00'
 ),
 
 (
@@ -64,9 +146,9 @@ VALUES
 'mysql.jpg',
 'JOIN запросы',
 'Связи между таблицами',
-'JOIN используется для объединения информации из нескольких таблиц. Рассматриваем основные виды соединений.',
+'JOIN позволяет объединять данные сразу из нескольких таблиц. В статье рассматриваются INNER JOIN, LEFT JOIN и другие виды соединений.',
 560,
-'2026-07-15'
+'2026-07-15 16:10:00'
 ),
 
 (
@@ -74,20 +156,19 @@ VALUES
 'mysql.jpg',
 'Оптимизация SQL',
 'Повышение производительности базы',
-'Грамотное проектирование запросов помогает создавать быстрые и стабильные приложения.',
+'Оптимизация SQL-запросов начинается с анализа плана выполнения и правильного проектирования структуры базы данных.',
 1250,
-'2026-07-20'
+'2026-07-20 11:00:00'
 ),
-
 
 (
 7,
 'docker.jpg',
 'Docker для PHP',
-'Первый PHP контейнер',
-'Docker позволяет создать одинаковое окружение разработки на разных компьютерах.',
+'Первый PHP-контейнер',
+'Docker позволяет быстро развернуть единое окружение разработки независимо от операционной системы разработчика.',
 820,
-'2026-07-18'
+'2026-07-18 15:00:00'
 ),
 
 (
@@ -95,9 +176,9 @@ VALUES
 'docker.jpg',
 'Docker Compose',
 'Управление сервисами проекта',
-'Docker Compose позволяет запускать PHP, MySQL и другие сервисы одной командой.',
+'Docker Compose позволяет запускать несколько связанных контейнеров одной командой, значительно упрощая разработку.',
 1430,
-'2026-07-22'
+'2026-07-22 13:40:00'
 ),
 
 (
@@ -105,14 +186,14 @@ VALUES
 'docker.jpg',
 'Dockerfile',
 'Создание собственных образов',
-'Dockerfile описывает процесс сборки и настройки контейнера.',
+'Dockerfile описывает последовательность сборки собственного Docker-образа и позволяет автоматизировать процесс развертывания.',
 670,
-'2026-07-27'
+'2026-07-27 18:00:00'
 );
 
-
-
-INSERT INTO post_category(post_id, category_id) VALUES
+INSERT INTO post_category
+(post_id, category_id)
+VALUES
 
 (1,1),
 (2,1),
@@ -126,5 +207,6 @@ INSERT INTO post_category(post_id, category_id) VALUES
 (8,3),
 (9,3);
 
-
-SET FOREIGN_KEY_CHECKS=1;
+-- ==========================================
+-- END
+-- ==========================================
