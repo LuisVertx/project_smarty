@@ -2,15 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Core\Database;
+use App\Controllers\HomeController;
 
-Database::connect();
-
-echo "Database connected successfully!";
-use App\Models\Category;
-
-echo "<pre>";
-
-print_r(Category::all());
-
-die();
+$controller = new HomeController();
+$controller->index();

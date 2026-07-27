@@ -34,4 +34,30 @@ class Category
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public static function withLatestPosts(int $limit = 3): array
+    {
+        $db = Database::connect();
+
+        $stmt = $db->query("
+            SELECT c.id, c.title, c.description
+            FROM categories c
+            WHERE EXISTS (
+                SELECT 1
+                FROM post_category pc
+                WHERE pc.category_id = c.id
+            )
+            ORDER BY c.title
+        ");
+
+        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($categories as &$category) {
+            $category['posts'] = Post::latestByCategory((int)$category['id'], $limit);
+        }
+
+        unset($category);
+
+        return $categories;
+    }
 }
