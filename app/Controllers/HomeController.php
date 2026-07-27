@@ -11,6 +11,13 @@ class HomeController
 {
     $db = \App\Core\Database::getInstance();
 
+    $sort = $_GET['sort'] ?? 'date';
+
+$orderBy = match ($sort) {
+    'views' => 'p.views DESC',
+    default => 'p.created_at DESC',
+};
+
     $categories = $db->fetchAll("
         SELECT DISTINCT c.*
         FROM categories c
@@ -22,24 +29,25 @@ class HomeController
     foreach ($categories as &$category) {
 
         $category['posts'] = $db->fetchAll("
-            SELECT p.*
-            FROM posts p
-            INNER JOIN post_category pc
-                ON pc.post_id = p.id
-            WHERE pc.category_id = ?
-            ORDER BY p.created_at DESC
-            LIMIT 3
-        ", [$category['id']]);
+    SELECT p.*
+    FROM posts p
+    INNER JOIN post_category pc
+        ON pc.post_id = p.id
+    WHERE pc.category_id = ?
+    ORDER BY {$orderBy}
+    LIMIT 3
+", [$category['id']]);
 
     }
 
     $view = new View();
 
-    $view->render(
+   $view->render(
     'home.tpl',
     [
         'title' => 'Главная',
-        'categories' => $categories
+        'categories' => $categories,
+        'sort' => $sort
     ]
 );
 }
