@@ -1,63 +1,82 @@
 <?php
 
-namespace App\Models;
+namespace App\Controllers;
 
 use App\Core\Database;
-use PDO;
+use App\Core\View;
 
-class Category
+class CategoryController
 {
-    public static function all(): array
+    public function show(int $id): void
     {
-        $db = Database::connect();
+        $db = Database::getInstance();
 
-        $sql = "
-            SELECT *
-            FROM categories
-            ORDER BY title
-        ";
+        $category = $db->fetch(
+            "SELECT * FROM categories WHERE id = ?",
+            [$id]
+        );
 
-        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public static function find(int $id): array|false
-    {
-        $db = Database::connect();
-
-        $stmt = $db->prepare("
-            SELECT *
-            FROM categories
-            WHERE id = ?
-        ");
-
-        $stmt->execute([$id]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public static function withLatestPosts(int $limit = 3): array
-    {
-        $db = Database::connect();
-
-        $stmt = $db->query("
-            SELECT c.id, c.title, c.description
-            FROM categories c
-            WHERE EXISTS (
-                SELECT 1
-                FROM post_category pc
-                WHERE pc.category_id = c.id
-            )
-            ORDER BY c.title
-        ");
-
-        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($categories as &$category) {
-            $category['posts'] = Post::latestByCategory((int)$category['id'], $limit);
+        if (!$category) {
+            http_response_code(404);
+            exit('Category not found');
         }
 
-        unset($category);
+        $sort = $_GET['sort'] ?? 'date';
 
-        return $categories;
+        $sortMap = [
+            'date' => 'p.created_at DESC, p.id DESC',
+            'views' => 'p.views DESC, p.created_at DESC, p.id DESC',
+        ];
+
+        if (!isset($sortMap[$sort])) {
+            $sort = 'date';
+        }
+
+        $page = (int)($_GET['page'] ?? 1);
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $perPage = 6;
+
+        $totalRow = $db->fetch(
+            "
+            SELECT COUNT(*) AS total
+            FROM posts p
+            INNER JOIN post_category pc ON pc.post_id = p.id
+            WHERE pc.category_id = ?
+            ",
+            [$id]
+        );
+
+        $totalPosts = (int)($totalRow['total'] ?? 0);
+        $totalPages = max(1, (int)ceil($totalPosts / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
+
+        $offset = ($page - 1) * $perPage;
+
+        $posts = $db->fetchAll("
+            SELECT p.*
+            FROM posts p
+            INNER JOIN post_category pc ON pc.post_id = p.id
+            WHERE pc.category_id = ?
+            ORDER BY {$sortMap[$sort]}
+            LIMIT {$perPage} OFFSET {$offset}
+        ", [$id]);
+
+        $view = new View();
+
+        $view->render('category.tpl', [
+            'title' => $category['title'],
+            'category' => $category,
+            'posts' => $posts,
+            'sort' => $sort,
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'totalPosts' => $totalPosts,
+        ]);
     }
 }

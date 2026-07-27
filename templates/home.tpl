@@ -1,41 +1,47 @@
-{extends file="layouts/main.tpl"}
+{extends file='layouts/main.tpl'}
 
 {block name=content}
+    {foreach $categories as $category}
+        <section class="category">
+            <div class="category__header">
+                <div>
+                    <h2 class="category__title">{$category.title|escape|upper}</h2>
+                </div>
 
-<h2>Главная страница</h2>
-
-{foreach $categories as $category}
-
-<div class="category">
-
-    <h3>{$category.title}</h3>
-
-    <p>{$category.description}</p>
-
-    <div class="posts">
-
-        {foreach $category.posts as $post}
-
-            <div class="post">
-
-                <h4>{$post.title}</h4>
-
-                <p>{$post.description}</p>
-
+                <a class="btn" href="/category.php?id={$category.id}">
+                    View All
+                </a>
             </div>
 
-        {/foreach}
+            <div class="posts">
+                {foreach $category.posts as $post}
+                    <article class="post-card">
+                        <a href="/article.php?id={$post.id}">
+                            <img
+                                class="post-card__image"
+                                src="https://picsum.photos/seed/post-{$post.id}/600/360"
+                                alt="{$post.title|escape}"
+                            >
+                        </a>
 
-    </div>
+                        <h3 class="post-card__title">
+                            <a href="/article.php?id={$post.id}">
+                                {$post.title|escape}
+                            </a>
+                        </h3>
 
-    <a href="/category.php?id={$category.id}">
-        Все статьи →
-    </a>
+                        <div class="post-card__date">{$post.created_at}</div>
 
-    <hr>
+                        <p class="post-card__description">
+                            {$post.description|escape}
+                        </p>
 
-</div>
-
-{/foreach}
-
+                        <a class="post-card__link" href="/article.php?id={$post.id}">
+                            Continue Reading
+                        </a>
+                    </article>
+                {/foreach}
+            </div>
+        </section>
+    {/foreach}
 {/block}
